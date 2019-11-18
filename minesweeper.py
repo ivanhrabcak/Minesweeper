@@ -1,6 +1,4 @@
-import time, random, math, datetime
-
-#abcs = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+import time, random, math, datetime, sys
 
 # Input - x.z
 
@@ -18,18 +16,19 @@ class Field:
             self.fill_mines()
         else:
             self.array = array
+        self.map = self.gen()
+        self.turn = 1
     
     def gen(self):
         arr = []
-        for i in range(self.shape[0]):
+        for i in range(self.shape[0] + 2):
             l = []
-            for i in range(self.shape[1]):
+            for i in range(self.shape[1] + 2):
                 l.append(0)
             arr.append(l)
         return arr
     
     def correct_format(self, position):
-        correct = True
         if "." not in position:
             return False
         else:
@@ -44,40 +43,56 @@ class Field:
 
         mine_positions = []
         while True:
-            mine = Point(random.randint(0, self.shape[0]), random.randint(0, self.shape[1]))
-            print("[-] Generated mine: " + str(mine.x) + "." + str(mine.y))
+            mine = Point(random.randint(0, self.shape[0] - 1), random.randint(0, self.shape[1] - 1))
             if len(mine_positions) == self.mines:
                 break
             if mine in mine_positions:
-                print("[-] Mine already in mine_positions.")
                 continue
-            mine_positions.append(mine)
+            else:
+                mine_positions.append(mine)
         
         for pos in mine_positions:
-            pos = Point(pos)
-            self.write(pos.X, pos.Y, "+1")#[2][2]
-        
-        print(self.array)
+            self.write(pos.x, pos.y, "+1")#[2][2]
     
     def win(self):
         return True
     
-    def read(self, position):
-        return self.array[self.get_index(position)][self.get_position(position)]
+    def read(self, px, py):
+        return self.array[py + 1][py + 1]
     
-    def write(self, positiona, positionb, new):
+    def write(self, px, py, new):
         if "+" in new:
-            self.array[self.get_index(position)][self.get_position(position)] += new.replace("+", "")
+            self.array[px + 1][py + 1] += int(new.replace("+", ""))
         else:
-            self.array[self.get_index(position)][self.get_position(position)] = new
-    def get_index(self, position):
-        return math.floor(position / self.shape[1])
+            self.array[px + 1][py + 1] = new
     
-    def get_position(self, position):
-        return math.floor(position % self.shape[1])
+    def reveal(self, posx, posy):
+        while self.turn == 1 and self.array[posx][posy] <= 9:
+            del self.array
+            self.array = self.gen()
+            self.fill_mines()
+        # :(((((((((((((((
+        
 
+    def draw(self):
+        number_line = 0
+        print("- ", end = "")
+        for i in range(self.shape[1]):
+            print(i, end = " ")
+        for r in range(self.shape[0]):
+            print("")
+            print(number_line, end = " ")
+            number_line += 1
+            r += 1
+            for i in range(self.shape[1]):
+                i += 1
+                c = self.map[r][i]
+                print(c, end = " ")
 
 field = Field()
+
+field.draw()
+sys.exit()
 
 start = time.time()
 while True:
@@ -96,7 +111,6 @@ while True:
     x = int(f.split("."))[0]
     y = int(f.split("."))[1]
     point = Point(x, y)
-    field.write(point.X, point.Y, 99999999)
     if field.win():
         print("You won!")
         break
