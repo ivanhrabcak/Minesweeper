@@ -43,28 +43,19 @@ class Field:
     def fill_mines(self):
 
         mine_positions = []
-        for n in range(0, self.mines):
-            mine = random.randint(0, self.shape[0] * self.shape[1])
-            x = random.randomint(0, self.shape[0])
-            y = random.randomint(0, self.shape[1])
-            point = Point(x, y)
-            if not mine in mine_positions:
-                mine_positions.append(mine)
-            else:
-                while True:
-                    mine = random.randint(0, self.shape[0] * self.shape[1])
-                    if not mine in mine_positions:
-                        mine_positions.append(mine)
-                        break
-            # while True:
-            #         mine = random.randint(0, self.shape[0] * self.shape[1])
-            #         if mine in mine_positions:
-            #             break
-                        
-            #     mine_positions.append(mine)
+        while True:
+            mine = Point(random.randint(0, self.shape[0]), random.randint(0, self.shape[1]))
+            print("[-] Generated mine: " + str(mine.x) + "." + str(mine.y))
+            if len(mine_positions) == self.mines:
+                break
+            if mine in mine_positions:
+                print("[-] Mine already in mine_positions.")
+                continue
+            mine_positions.append(mine)
         
         for pos in mine_positions:
-            self.write(pos, pos.X, pos.Y)#[2][2]
+            pos = Point(pos)
+            self.write(pos.X, pos.Y, "+1")#[2][2]
         
         print(self.array)
     
@@ -75,8 +66,10 @@ class Field:
         return self.array[self.get_index(position)][self.get_position(position)]
     
     def write(self, positiona, positionb, new):
-        self.array[self.get_index(position)][self.get_position(position)] = new
-
+        if "+" in new:
+            self.array[self.get_index(position)][self.get_position(position)] += new.replace("+", "")
+        else:
+            self.array[self.get_index(position)][self.get_position(position)] = new
     def get_index(self, position):
         return math.floor(position / self.shape[1])
     
@@ -100,10 +93,10 @@ while True:
             print("Wrong format.")
             continue
         break
-    x = int(f.split(".")[0]
-    y = int(f.split(".")[2]
+    x = int(f.split("."))[0]
+    y = int(f.split("."))[1]
     point = Point(x, y)
-    field.write(point.X, point.Y), 99999999)
+    field.write(point.X, point.Y, 99999999)
     if field.win():
         print("You won!")
         break
