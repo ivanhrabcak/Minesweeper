@@ -58,7 +58,7 @@ class Field:
         return True
     
     def read(self, px, py):
-        return self.array[py + 1][py + 1]
+        return self.array[px + 1][py + 1]
     
     def write(self, px, py, new):
         if "+" in new:
