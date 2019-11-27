@@ -39,8 +39,14 @@ class Field:
             else:
                 return False
     
-    def fill_mines(self):
+    def increment_field(self, px, py, by = 1):
+        self.array[px][py] += by
 
+    def fill_numbers(self, mine_positions):
+        for mine in mine_positions:
+            self.increment_field(mine.x, mine.y)
+
+    def fill_mines(self):
         mine_positions = []
         while True:
             mine = Point(random.randint(0, self.shape[0] - 1), random.randint(0, self.shape[1] - 1))
@@ -52,7 +58,8 @@ class Field:
                 mine_positions.append(mine)
         
         for pos in mine_positions:
-            self.write(pos.x, pos.y, "+1")#[2][2]
+            self.increment_field(pos.x, pos.y, 9)#[2][2]
+        self.fill_numbers(mine_positions)
     
     def win(self):
         return True
@@ -61,18 +68,13 @@ class Field:
         return self.array[px + 1][py + 1]
     
     def write(self, px, py, new):
-        if "+" in new:
-            self.array[px + 1][py + 1] += int(new.replace("+", ""))
-        else:
-            self.array[px + 1][py + 1] = new
+        self.array[px + 1][py + 1] = new
     
     def reveal(self, posx, posy):
-        while self.turn == 1 and self.array[posx][posy] <= 9:
-            del self.array
-            self.array = self.gen()
-            self.fill_mines()
-        # :(((((((((((((((
-        
+        p = Point(posx, posy)
+    
+    def set(self, posx, posy):
+        self.map[posx][posy]
 
     def draw(self):
         number_line = 0
@@ -91,13 +93,14 @@ class Field:
 
 field = Field()
 
+print(field.map)
+
 field.draw()
-sys.exit()
 
 start = time.time()
 while True:
     while True:
-        action = str(input("Set or Reveal? "))
+        action = str(input("\nSet or Reveal? "))
         if action != "R" and action != "S":
             print("Invalid action.")
             continue
@@ -108,11 +111,20 @@ while True:
             print("Wrong format.")
             continue
         break
-    x = int(f.split("."))[0]
-    y = int(f.split("."))[1]
+    x = int(f.split(".")[0])
+    y = int(f.split(".")[1])
     point = Point(x, y)
+    
+    field.draw()
+    
+    if action == "R":
+        field.reveal(point.x, point.y)
+    elif action == "S":
+        field.set(point.x, point.y)
+    
+    
     if field.win():
-        print("You won!")
+        print("\nYou won!")
         break
 
 end = time.time()
