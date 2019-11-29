@@ -62,6 +62,15 @@ class Field:
         self.fill_numbers(mine_positions)
     
     def win(self):
+        for i in self.map:
+            for a in i:
+                if a >= 9:
+                    print(a)
+                    return False
+        for i in self.map:
+            for a in i:
+                if a == 0:
+                    return None
         return True
     
     def read(self, px, py):
@@ -71,8 +80,43 @@ class Field:
         self.array[px + 1][py + 1] = new
     
     def reveal(self, posx, posy):
-        p = Point(posx, posy)
-    
+        print(posx, posy)
+        alr = []
+        try:
+            if posx >= 1:
+                if self.array[posx - 1][posy] == 0:
+                    self.reveal(posx - 1, posy)
+                else:
+                    alr.append([posx - 1, posy])
+                    self.map[posx - 1][posy] = self.array[posx - 1][posy]
+                    print("revealing...")
+            if posy >= 1:
+                if self.array[posx - 1][posy] == 0:
+                    self.reveal(posx, posy - 1)
+                else:
+                    alr.append([posx, posy - 1])
+                    self.map[posx][posy - 1] = self.array[posx][posy - 1]
+                    print("revealing...")
+            if posx < 9:
+                if self.array[posx + 1][posy] == 0:
+                    self.reveal(posx + 1, posy)
+                else:
+                    alr.append([posx + 1, posy])
+                    self.map[posx + 1][posy] = self.array[posx][posy - 1]
+                    print("revealing...")
+            if posy < 9:
+                if self.array[posx][posy + 1] == 0:
+                    self.reveal(posx, posy + 1)
+                else:
+                    alr.append([posx, posy + 1])
+                    self.map[posx][posy + 1] = self.array[posx][posy + 1]
+                    print("revealing...")
+        except Exception as e:
+            print(e)
+            print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+            self.draw()
+            sys.exit()
+
     def set(self, posx, posy):
         self.map[posx][posy]
 
@@ -91,9 +135,20 @@ class Field:
                 c = self.map[r][i]
                 print(c, end = " ")
 
-field = Field()
+f = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+     [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+     [0, 0, 1, 9, 1, 0, 0, 0, 0, 0, 0, 0],
+     [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
-print(field.map)
+field = Field(array = f, shape = [10, 10], mines = 1)
 
 field.draw()
 
@@ -115,16 +170,24 @@ while True:
     y = int(f.split(".")[1])
     point = Point(x, y)
     
-    field.draw()
-    
     if action == "R":
         field.reveal(point.x, point.y)
     elif action == "S":
         field.set(point.x, point.y)
     
-    
-    if field.win():
+    won = field.win()
+    if won:
+        print("")
+        field.draw()
         print("\nYou won!")
+        break
+    elif won == None:
+        field.draw()
+        pass
+    else:
+        print("")
+        field.draw()
+        print("\nYou lost!")
         break
 
 end = time.time()
