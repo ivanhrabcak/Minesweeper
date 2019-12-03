@@ -18,6 +18,7 @@ class Field:
             self.array = array
         self.map = self.gen()
         self.turn = 1
+        self.alr = []
     
     def gen(self):
         arr = []
@@ -81,41 +82,39 @@ class Field:
     
     def reveal(self, posx, posy):
         print(posx, posy)
-        alr = []
-        try:
-            if posx >= 1:
-                if self.array[posx - 1][posy] == 0:
-                    self.reveal(posx - 1, posy)
-                else:
-                    alr.append([posx - 1, posy])
-                    self.map[posx - 1][posy] = self.array[posx - 1][posy]
-                    print("revealing...")
-            if posy >= 1:
-                if self.array[posx - 1][posy] == 0:
-                    self.reveal(posx, posy - 1)
-                else:
-                    alr.append([posx, posy - 1])
-                    self.map[posx][posy - 1] = self.array[posx][posy - 1]
-                    print("revealing...")
-            if posx < 9:
-                if self.array[posx + 1][posy] == 0:
-                    self.reveal(posx + 1, posy)
-                else:
-                    alr.append([posx + 1, posy])
-                    self.map[posx + 1][posy] = self.array[posx][posy - 1]
-                    print("revealing...")
-            if posy < 9:
-                if self.array[posx][posy + 1] == 0:
-                    self.reveal(posx, posy + 1)
-                else:
-                    alr.append([posx, posy + 1])
-                    self.map[posx][posy + 1] = self.array[posx][posy + 1]
-                    print("revealing...")
-        except Exception as e:
-            print(e)
-            print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-            self.draw()
-            sys.exit()
+        print(self.alr)
+        if posx >= 1:
+            if self.array[posx - 1][posy] == 0 and [posx - 1, posy] not in self.alr:
+                self.alr.append([posx - 1, posy])
+                self.reveal(posx - 1, posy)
+            else:
+                self.alr.append([posx - 1, posy])
+                self.map[posx - 1][posy] = self.array[posx - 1][posy]
+                print("revealing...")
+        if posy >= 1:
+            if self.array[posx - 1][posy] == 0 and [posx, posy - 1] not in self.alr:
+                self.alr.append([posx, posy - 1])
+                self.reveal(posx, posy - 1)
+            else:
+                self.alr.append([posx, posy - 1])
+                self.map[posx][posy - 1] = self.array[posx][posy - 1]
+                print("revealing...")
+        if posx < 9:
+            if self.array[posx + 1][posy] == 0 and [posx + 1, posy] not in self.alr:
+                self.alr.append([posx + 1, posy])
+                self.reveal(posx + 1, posy)
+            else:
+                self.alr.append([posx + 1, posy])
+                self.map[posx + 1][posy] = self.array[posx][posy - 1]
+                print("revealing...")
+        if posy < 9:
+            if self.array[posx][posy + 1] == 0 and [posx, posy + 1] not in self.alr:
+                self.alr.append([posx, posy + 1])
+                self.reveal(posx, posy + 1)
+            else:
+                self.alr.append([posx, posy + 1])
+                self.map[posx][posy + 1] = self.array[posx][posy + 1]
+                print("revealing...")
 
     def set(self, posx, posy):
         self.map[posx][posy]
@@ -134,7 +133,7 @@ class Field:
                 i += 1
                 c = self.map[r][i]
                 print(c, end = " ")
-
+                
 f = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
      [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
      [0, 0, 1, 9, 1, 0, 0, 0, 0, 0, 0, 0],
