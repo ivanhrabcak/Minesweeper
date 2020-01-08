@@ -121,7 +121,7 @@ class Field:
                     for j in range(-1, 2):
                         if i == 0 and j == 0:
                             continue
-                        if self.array[posx][posy] < 9 self.array[posx][posy] != self.map[posx][posy]:
+                        if self.array[posx][posy] < 9 and self.array[posx][posy] != self.map[posx][posy]:
                             self.map[posx][posy] = self.array[posx][posy]
                             self.reveal(posx + i, posy + j, True)
                         elif self.array[posx][posy] == 9 and not recursion:
