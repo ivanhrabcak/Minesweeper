@@ -10,6 +10,12 @@ class Point:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+    
+    def eqalsTo(self, point2):
+        if self.x == point2.x and self.y == point2.y:
+            return True
+        else:
+            return False
 
 class Field:
     def __init__(self, shape = [10, 10], mines = 10, array = []):
@@ -47,9 +53,17 @@ class Field:
     def increment_field(self, px, py, by = 1):
         self.array[px][py] += by
 
-    def fill_numbers(self, mine_positions):
-        for mine in mine_positions:
-            self.increment_field(mine.x, mine.y)
+    def fill_numbers(self):
+        for j in range(-1, 2):
+            for i in range(-1, 2): 
+                if j == 0 and i == 0:
+                    continue
+                
+                for mine in self.mine_positions:
+                    if self.array[i][j] == 9:
+                        continue
+                    self.increment_field(mine.x + i, mine.y + j)
+    
 
     def fill_mines(self):
         self.mine_positions = []
@@ -69,7 +83,7 @@ class Field:
         for pos in self.mine_positions:
             self.increment_field(pos.x, pos.y, 9)#[2][2]
 
-        self.fill_numbers(self.mine_positions)
+        self.fill_numbers()
     
     def win(self):
         for i in self.map:
@@ -98,19 +112,34 @@ class Field:
     def isInBounds(self, pos):
         return pos.x > 0 and pos.x <= 9 and pos.y > 0 and pos.y <= 9
 
-    def reveal(self, posx, posy):
-        print(posx, posy)
+    def reveal(self, posx, posy, recursion = False):
         for i in range(-1, 1):
             if i == 0:
                 continue
             if self.isInBounds(Point(posx, posy)):
-                #if self.array[posx][posy] == self.map[posx][posy]
-                if self.map[posx][posy] == -1:
-                    self.map[posx][posy] = self.array[posx][posy]
-                    self.reveal(posx + i, posy)
-                    self.reveal(posx, posy + i)
+                for i in range(-1, 2):
+                    for j in range(-1, 2):
+                        if i == 0 and j == 0:
+                            continue
+                        if self.array[posx][posy] < 9 self.array[posx][posy] != self.map[posx][posy]:
+                            self.map[posx][posy] = self.array[posx][posy]
+                            self.reveal(posx + i, posy + j, True)
+                        elif self.array[posx][posy] == 9 and not recursion:
+                            self.map[posx][posy] = self.array[posx][posy]
+                            return
 
-    def set(self, point): 
+
+                # #if self.array[posx][posy] == self.map[posx][posy]
+                # if self.array[posx][posy] < 9:
+                #     self.map[posx][posy] = self.array[posx][posy]
+                #     self.reveal(posx + i, posy, True)
+                #     self.reveal(posx, posy + i, True)
+                #     self.reveal(posx + i, posy + i, True)
+                # elif self.array[posx][posy] == 9 and not recursion:
+                #     self.map[posx][posy] = self.array[posx][posy]
+                #     return
+    
+    def setField(self, point): 
         if [point.x, point.y] not in self.flags:
             self.map[point.x + 1][point.y + 1] = -2
             print(self.map)
@@ -177,7 +206,7 @@ while True:
     if action == "r":
         field.reveal(point.x, point.y)
     elif action == "s":
-        field.set(point)
+        field.setField(point)
     won = field.win()
     if won:
         print("")
