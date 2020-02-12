@@ -108,7 +108,7 @@ class Field:
     
     def write(self, px, py, new):
         self.array[px + 1][py + 1] = new
-    
+ 
     def isInBounds(self, pos):
         return pos.x > 0 and pos.x <= 9 and pos.y > 0 and pos.y <= 9
 
@@ -127,6 +127,11 @@ class Field:
                         elif self.array[posx][posy] == 9 and not recursion:
                             self.map[posx][posy] = self.array[posx][posy]
                             return
+                        elif self.array[posx][posy] < 9 and not recursion:
+                            self.reveal(posx + i, posy + j, True)
+                        else:
+                            return
+                            
 
 
                 # #if self.array[posx][posy] == self.map[posx][posy]
