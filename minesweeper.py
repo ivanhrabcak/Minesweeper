@@ -145,7 +145,8 @@ class Field:
                 #     return
     
     def setField(self, point): 
-        if [point.x, point.y] not in self.flags:
+        elif self.array[point.x + 1][point.y + 1] !=
+        elif [point.x, point.y] not in self.flags:
             self.map[point.x + 1][point.y + 1] = -2
             print(self.map)
             self.flags.append(point)
@@ -172,6 +173,8 @@ class Field:
                     c = 0
                 elif self.map[r][i] == -2:
                     c = "F"
+                elif self.map[r][i] == 9:
+                    c = "M"
                 print(c, end = " ")
                 
 # f = [[9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
